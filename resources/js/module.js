@@ -1,0 +1,1 @@
+angular.module('RDash', ['satellizer' , 'ui.bootstrap', 'ui.router', 'ngCookies']);
