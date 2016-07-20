@@ -1,27 +1,37 @@
-# Laravel PHP Framework
+# RDash rdash-angular
+## Responsive, bloat free, bootstrap powered admin style dashboard!
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/rdash/rdash-angular?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)
-[![Total Downloads](https://poser.pugx.org/laravel/framework/d/total.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/framework/v/stable.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/framework/v/unstable.svg)](https://packagist.org/packages/laravel/framework)
-[![License](https://poser.pugx.org/laravel/framework/license.svg)](https://packagist.org/packages/laravel/framework)
+rdash-angular is an AngularJS implementation of the RDash admin dashboard. The dashboard uses a small number of modules to get you started, along with some handy directives and controllers to speed up development using the dashboard.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, queueing, and caching.
+Check out the [live example](http://rdash.github.io/)!
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+## Usage
+### Requirements
+* [NodeJS](http://nodejs.org/) (with [NPM](https://www.npmjs.org/))
+* [Bower](http://bower.io)
+* [Gulp](http://gulpjs.com)
 
-## Official Documentation
+### Installation
+1. Clone the repository: `git clone https://github.com/rdash/rdash-angular.git`
+2. Install the NodeJS dependencies: `npm install`.
+3. Install the Bower dependencies: `bower install`.
+4. Run `gulp rtl-css` to macke template RTL Support
+5. Run the gulp build task: `gulp build`.
+6. Run the gulp default task: `gulp`. This will build any changes made automatically, and also run a live reload server on [http://localhost:8888](http://localhost:8888).
 
-Documentation for the framework can be found on the [Laravel website](http://laravel.com/docs).
+Ensure your preferred web server points towards the `public` directory.
 
-## Contributing
+### Development
+Continue developing the dashboard further by editing the `resources` directory. With the `gulp` command, any file changes made will automatically be compiled into the specific location within the `public` directory.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](http://laravel.com/docs/contributions).
+#### Modules & Packages
+By default, rdash-angular includes [`ui.bootstrap`](http://angular-ui.github.io/bootstrap/), [`ui.router`](https://github.com/angular-ui/ui-router) and [`ngCookies`](https://docs.angularjs.org/api/ngCookies). 
 
-## Security Vulnerabilities
+If you'd like to include any additional modules/packages not included with rdash-angular, add them to your `bower.json` file and then update the `resources/index.html` file, to include them in the minified distribution output.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+## Credits
+* [Elliot Hesp](https://github.com/Ehesp)
+* [Leonel Samayoa](https://github.com/lsamayoa)
+* [Mathew Goldsborough](https://github.com/mgoldsborough)
+* [Ricardo Pascua Jr](https://github.com/rdpascua)
