@@ -18,17 +18,24 @@ var gulp = require('gulp'),
     browserSync = require('browser-sync').create();
 
 var paths = {
-    scripts: 'resources/js/**/*.*',
-    styles: 'resources/less/**/*.*',
-    images: 'resources/img/**/*.*',
-    templates: 'resources/templates/**/*.html',
-    main: 'resources/main.php',
-    bower_fonts: 'resources/components/**/*.{ttf,woff,eof,svg}',
+    scripts: 'resources/components/**/*.js',                            // javaScripts files
+    templates: 'resources/components/**/*.html',                        // html files
+    main: 'resources/main.php',                                         // main files 
+    styles: 'resources/assets/less/**/*.*',                             // styles
+    images: 'resources/assets/img/**/*.*',                              // images
+    bower_fonts: 'bower_components/**/*.{ttf,woff,eof,svg}',            // font awsome
 };
 
 /**
- * Handle bower components from main
+ * Handle bower bower_components from main
  */
+
+gulp.task('rtl-css', function () {
+	return gulp.src('bower_components/**/*.css')
+		.pipe(rtlcss())
+		.pipe(gulp.dest('bower_components'));
+});
+
 gulp.task('usemin', function() {
     return gulp.src(paths.main)
         .pipe(usemin({
@@ -54,7 +61,7 @@ gulp.task('copy-bower_fonts', function() {
 /**
  * Handle custom files
  */
-gulp.task('build-custom', ['custom-images', 'custom-js', 'custom-less', 'custom-templates']);
+gulp.task('build-custom', ['custom-images', 'custom-js',  'custom-less' , 'custom-templates']);
 
 gulp.task('custom-images', function() {
     return gulp.src(paths.images)
@@ -77,7 +84,7 @@ gulp.task('custom-less', function() {
 gulp.task('custom-templates', function() {
     return gulp.src(paths.templates)
         .pipe(minifyHTML())
-        .pipe(gulp.dest('public/templates'));
+        .pipe(gulp.dest('public/components'));
 });
 
 /**
@@ -107,12 +114,9 @@ gulp.task('browser-sync', function() {
 /**
  * Gulp tasks
  */
+
+// build task after download bower_components first rtlcss then minify it and then build assets
+// then build assets and finally build custome 
 gulp.task('build', ['usemin', 'build-assets', 'build-custom']);
 gulp.task('default', ['build', 'browser-sync', 'watch']);
 
-
-gulp.task('rtl-css', function () {
-	return gulp.src('src/components/**/*.css')
-		.pipe(rtlcss())
-		.pipe(gulp.dest('src/components'));
-});
