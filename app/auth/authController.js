@@ -1,0 +1,33 @@
+(function() {
+
+    'use strict';
+
+    angular
+        .module('RDash')
+        .controller('AuthController', ['$auth' , '$state' ,AuthController]);
+
+
+    function AuthController($auth, $state) {
+         console.log('object');
+        var vm = this;
+            
+        vm.login = function() {
+
+            var credentials = {
+                email: vm.email,
+                password: vm.password
+            }
+
+            console.log(credentials);
+            
+            // Use Satellizer's $auth service to login
+            $auth.login(credentials).then(function(data) {
+
+                // If login is successful, redirect to the users state
+                $state.go('dash.index');
+            });
+        }
+
+    }
+
+})();
