@@ -2,10 +2,6 @@
  * Widget Footer Directive
  */
 
-angular
-    .module('RDash')
-    .directive('rdWidgetFooter', rdWidgetFooter);
-
 function rdWidgetFooter() {
     var directive = {
         requires: '^rdWidget',
@@ -15,3 +11,5 @@ function rdWidgetFooter() {
     };
     return directive;
 };
+
+ANGULARJS_APP.directive('rdWidgetFooter', rdWidgetFooter);

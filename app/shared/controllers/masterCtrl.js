@@ -2,9 +2,6 @@
  * Master Controller
  */
 
-angular.module('RDash')
-    .controller('MasterCtrl', ['$scope', '$cookieStore', MasterCtrl]);
-
 function MasterCtrl($scope, $cookieStore) {
     /**
      * Sidebar Toggle & Cookie Control
@@ -36,4 +33,6 @@ function MasterCtrl($scope, $cookieStore) {
     window.onresize = function() {
         $scope.$apply();
     };
-}
+};
+
+ANGULARJS_APP.controller('MasterCtrl', ['$scope', '$cookieStore', MasterCtrl]);

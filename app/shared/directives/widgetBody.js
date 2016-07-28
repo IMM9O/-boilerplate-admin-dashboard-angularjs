@@ -2,10 +2,6 @@
  * Widget Body Directive
  */
 
-angular
-    .module('RDash')
-    .directive('rdWidgetBody', rdWidgetBody);
-
 function rdWidgetBody() {
     var directive = {
         requires: '^rdWidget',
@@ -19,3 +15,6 @@ function rdWidgetBody() {
     };
     return directive;
 };
+
+
+ANGULARJS_APP.directive('rdWidgetBody', rdWidgetBody);

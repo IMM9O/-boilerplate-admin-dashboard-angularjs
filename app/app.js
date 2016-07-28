@@ -1,11 +1,13 @@
 'use strict';
 
-angular.module('RDash', ['satellizer' , 'ui.bootstrap', 'ui.router', 'ngCookies']);
+var URL = "http://localhost:8000/";
+
+var ANGULARJS_APP = angular.module('RDash', ['satellizer' , 'ui.bootstrap', 'ui.router', 'ngCookies' , 'angularUtils.directives.dirPagination']);
 
 /**
  * Route configuration for the RDash module.
  */
-angular.module('RDash').config(['$stateProvider', '$urlRouterProvider' , '$authProvider' ,
+ANGULARJS_APP.config(['$stateProvider', '$urlRouterProvider' , '$authProvider' ,
     function($stateProvider, $urlRouterProvider , $authProvider ) {
 
          // Satellizer configuration that specifies which API
@@ -35,6 +37,11 @@ angular.module('RDash').config(['$stateProvider', '$urlRouterProvider' , '$authP
             .state('dash.tables', {
                 url: '/tables',
                 templateUrl: 'templates/tables.html'
+            })
+            .state('dash.item', {
+               url: '/item',
+               templateUrl: 'item/itemsView.html',
+               controller: 'ItemController as item'
             });
     }
 ]);

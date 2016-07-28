@@ -2,10 +2,6 @@
  * Widget Directive
  */
 
-angular
-    .module('RDash')
-    .directive('rdWidget', rdWidget);
-
 function rdWidget() {
     var directive = {
         transclude: true,
@@ -18,3 +14,5 @@ function rdWidget() {
         /* */
     }
 };
+
+ANGULARJS_APP.directive('rdWidget', rdWidget);

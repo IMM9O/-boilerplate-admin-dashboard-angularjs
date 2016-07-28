@@ -2,10 +2,6 @@
  * Widget Header Directive
  */
 
-angular
-    .module('RDash')
-    .directive('rdWidgetHeader', rdWidgetTitle);
-
 function rdWidgetTitle() {
     var directive = {
         requires: '^rdWidget',
@@ -19,3 +15,6 @@ function rdWidgetTitle() {
     };
     return directive;
 };
+
+
+ANGULARJS_APP.directive('rdWidgetHeader', rdWidgetTitle);

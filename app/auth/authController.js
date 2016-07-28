@@ -1,11 +1,6 @@
 (function() {
 
-    'use strict';
-
-    angular
-        .module('RDash')
-        .controller('AuthController', ['$auth' , '$state' ,AuthController]);
-
+'use strict';
 
     function AuthController($auth, $state) {
          console.log('object');
@@ -28,6 +23,9 @@
             });
         }
 
-    }
+    };
+
+    ANGULARJS_APP.controller('AuthController', ['$auth' , '$state' ,AuthController]);
+
 
 })();
