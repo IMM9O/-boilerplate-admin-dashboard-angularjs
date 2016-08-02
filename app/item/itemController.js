@@ -2,60 +2,92 @@
 function ItemController ($uibModal , apiHttpServices){
  
 
-  var self = this ;
+var self = this ;
+
+  var modalInstance ;
 
   apiHttpServices.set('item');
 
   self.data = [];
   self.totalItems = 0;
 
+
   self.pageChanged = function(newPage) {
-    getResultsPage(newPage);
+    readPage(newPage);
   };
 
-  getResultsPage(1);
+  readPage(1);
 
-  function getResultsPage(pageNumber) {
+  // read page by page
+  function readPage(pageNumber) {
 
-        apiHttpServices.page(pageNumber).then(function(data) {
-          self.data = data.data.data;
-          self.totalItems = data.data.total;
+        apiHttpServices.page(pageNumber).then(function(serverData) {
+          self.data       = serverData.data.data;
+          self.totalItems = serverData.data.total;
         });
   }
 
-  self.saveAdd = function(){
-   
+  // 	Create new object 
+  self.createItem = function(){
+
+    var mlha_object_empty ={'mlha_name': '', 'mlha_desc':'' };
+    opnModal(mlha_object_empty , 'createModal.tpl.html');
+
+
+    if(modalInstance != undefined) {
+
+          modalInstance.result.then(function (items) {
+            console.log(items);
+            apiHttpServices.store(items).then(function(serverData) {
+               console.log(serverData);
+            });
+
+          }, function () {
+            //$log.info('Modal dismissed at: ' + new Date());
+          });
+    }
+    
   }
 
+  // update object funcsion 
+  self.updateItem = function(id){
 
-  self.edit = function(id){
+      apiHttpServices.show(id).then(function(serverData) {
 
-      apiHttpServices.get(id).then(function(data) {
-        self.opnModal(data.data);
+          opnModal(serverData.data, 'updateModal.tpl.html');
+
+          if(modalInstance != undefined) {
+
+              modalInstance.result.then(function (items) {
+                console.log(items);
+                apiHttpServices.update(items , id).then(function(serverData) {
+                  console.log(serverData);
+                });
+
+
+              }, function () {
+                //$log.info('Modal dismissed at: ' + new Date());
+              });
+          }
+
       });
 
   }
 
 
-  self.update = function(){
-    // $http.get(URL + '/api/mlhat/'+self.form.id,'POST',{},self.form).then(function(data) {
-    //   	$(".modal").modal("hide");
-    //     self.data = apiModifyTable(self.data,data.id,data);
-    // });
-  }
-
-  self.remove = function(item,index){
+  // Delete object function 
+  self.deleteItem = function(item,index){
     var result = confirm("Are you sure delete this item?");
    	if (result) {
 
         console.log(item.id);
         apiHttpServices.destroy(item.id)
-                 .success(function(data) {
-                        console.log(data);
+                 .success(function(serverData) {
+                        console.log(serverData);
                         //location.reload();
                          self.data.splice(index,1);
-                }).error(function(data) {
-                        console.log(data);
+                }).error(function(serverError) {
+                        console.log(serverError);
                         alert('Unable to delete');
                 });
 
@@ -63,27 +95,22 @@ function ItemController ($uibModal , apiHttpServices){
     }
   }
 
+  function opnModal(data , modalName) {
 
-  self.opnModal = function(data) {
-      var modalInstance = $uibModal.open({
-          animation: true,
-          templateUrl: 'editModal.tpl.html',
-          controller: 'ModalInstanceCtrl',
-          controllerAs: 'modalCtrl',
-          size: 'lg',
-          resolve: {
-            items: function () {
-              return data;
+      modalInstance  = $uibModal.open({
+            animation: true,
+            templateUrl: modalName,
+            controller: 'ModalInstanceCtrl',
+            controllerAs: 'modalCtrl',
+            size: 'lg',
+            resolve: {
+              items: function () {
+                return data;
+              }
             }
-          }
-      });
-
-      modalInstance.result.then(function (items) {
-        console.log(items);
-      }, function () {
-        //$log.info('Modal dismissed at: ' + new Date());
-      });
-  }
+        });
+        
+  } 
 
    
 };
