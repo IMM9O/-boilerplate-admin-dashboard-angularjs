@@ -1,36 +1,38 @@
 'use strict';
 
 var gulp = require('gulp');
-
 var usemin = require('gulp-usemin');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
-var todo = require('gulp-todo');
 var browserSync = require('browser-sync').create();
-var eslint = require('gulp-eslint');
 var minifyCss = require('gulp-cssnano');
 var minifyJs = require('gulp-uglify');
 var minifyHTML = require('gulp-htmlmin');
 var concat = require('gulp-concat');
 var rename = require('gulp-rename');
+var rtlcss = require('gulp-rtlcss');
+var notify = require("gulp-notify");
 
+var jshint = require('gulp-jshint');
+var jscs = require('gulp-jscs');
 
 var paths = {
-    scripts: 'app/**/*.js',                                   // javaScripts files
-    templates: 'app/**/*.html',                               // html files
-    main: 'app/index.html',                                              // main files 
-    styles: 'app/assets/sass/main.scss',                                 // styles
-    images: 'app/assets/img/**/*.*',                                     // images
-    bower_fonts: 'node_modules/**/*.{ttf,woff,eof,svg}',             // font awsome
+    scripts: 'src/**/*.js',                              // javaScripts files
+    templates: 'src/**/*.html',                          // html files
+    main: 'src/index.html',                                // main files 
+    styles: 'src/assets/sass/app.scss',                 // styles
+    images: 'src/assets/img/**/*.*',                     // images
+    fonts: 'node_modules/**/*.{ttf,woff,woff2,eof,svg}',             // font awsome
 };
 
 
 var dest = {
-    scripts: 'public/js',                                         // javaScripts files
-    templates: 'public',                                          // html files
-    css: 'public/css',                                            // css files
-    images: 'public/assets/img',                                  // images
-    fonts: 'public/assets/lib' ,
+    dest: 'public',
+    templates: 'public/templates',                               // html files
+    css: 'public/css',                                           // css files
+    scripts: 'public/js',                                        // javaScripts files
+    images: 'public/assets/img',                                 // images
+    fonts: 'public/assets/lib',                                 // fonts
 };
 
 
@@ -41,25 +43,33 @@ var dest = {
 //  */
 
 // minfiy and concat all js , css file into one file define in index.html file
-gulp.task('usemin', function() {
+// destination and file name defined in index.html
+
+
+gulp.task('usemin', function () {
     return gulp.src(paths.main)
         .pipe(usemin({
             js: ['concat'],
-            css: [minifyCss({keepSpecialComments: 0}), 'concat'],
+            css: [minifyCss({ keepSpecialComments: 0 }), 'concat'],
         }))
-        .pipe(gulp.dest('public/'));
+        .pipe(gulp.dest(dest.dest));
 });
 
-// copy all fonts into single folder 
-gulp.task('copy-bower_fonts', function() {
-    return gulp.src(paths.bower_fonts)
+gulp.task('copy-fonts', function () {
+    return gulp.src(paths.fonts)
         .pipe(rename({
             dirname: '/fonts'
         }))
         .pipe(gulp.dest(dest.fonts));
 });
 
-gulp.task('build-vendors', ['usemin','copy-bower_fonts']);
+gulp.task('rtl-css', function () {
+    return gulp.src('node_modules/**/*.css')
+        .pipe(rtlcss())
+        .pipe(gulp.dest('node_modules'))
+});
+
+gulp.task('build-vendors', ['usemin', 'copy-fonts']);
 
 // /******************************************************************************************************************************************/
 
@@ -68,84 +78,88 @@ gulp.task('build-vendors', ['usemin','copy-bower_fonts']);
 //  * Handle custome components 
 //  */
 
-
-
-// compile cass files into one css file then minify css  file  ( custome css )
-gulp.task('custom-styles', function() {
+/**Group task for custome files images , css , sass , html and javascript */
+gulp.task('custom-styles', function () {
     return gulp.src(paths.styles)
         .pipe(sass().on('error', sass.logError))
         .pipe(autoprefixer({
-			browsers: ['last 2 versions'],
-			cascade: false
-		}))
-        .pipe(minifyCss({keepSpecialComments: 0}))
-        .pipe(gulp.dest(dest.css));
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
+        .pipe(minifyCss({ keepSpecialComments: 0 }))
+        .pipe(gulp.dest(dest.css))
+        .pipe(notify("SASS are Compiled"));
 });
 
-// move images files into dest folder
-gulp.task('custom-images', function() {
+
+gulp.task('custom-css', function () {
+    return gulp.src(paths.css)
+        .pipe(autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
+        .pipe(minifyCss({ keepSpecialComments: 0 }))
+        .pipe(gulp.dest(dest.css))
+        .pipe(notify("css modified"));
+});
+
+
+gulp.task('custom-images', function () {
+
     return gulp.src(paths.images)
-        .pipe(gulp.dest(dest.images));
+        .pipe(gulp.dest(dest.images))
+        .pipe(notify("Images Moved"));
+
 });
 
-gulp.task('custom-templates', function() {
+gulp.task('custom-templates', function () {
+    var opts = { empty: true };
     return gulp.src(paths.templates)
-        .pipe(minifyHTML())
+        .pipe(rename(function (path) {
+            path.dirname = '';
+        }))
+        .pipe(minifyHTML(opts))
         .pipe(gulp.dest(dest.templates));
+
 });
 
-// ESLint Task
-gulp.task('lint', function () {
-    // ESLint ignores files with "node_modules" paths.
-    // So, it's best to have gulp ignore the directory as well.
-    // Also, Be sure to return the stream from the task;
-    // Otherwise, the task may end before the stream has finished.
+
+gulp.task('lint-code', function () {
     return gulp.src(paths.scripts)
-        // eslint() attaches the lint output to the "eslint" property
-        // of the file object so it can be used by other modules.
-        .pipe(eslint())
-        // eslint.format() outputs the lint results to the console.
-        // Alternatively use eslint.formatEach() (see Docs).
-        .pipe(eslint.format())
-        // To have the process exit with an error code (1) on
-        // lint error, return the stream and pipe to failAfterError last.
-        .pipe(eslint.failAfterError());
-        
+        .pipe(jshint('./.jshintrc'))
+        .pipe(jshint.reporter());
 });
 
-gulp.task('custom-js', function() {
+gulp.task('lint-style', function () {
     return gulp.src(paths.scripts)
-        .pipe(minifyJs())
-        .pipe(concat('dashboard.min.js'))
-        .pipe(gulp.dest(dest.scripts));
+        .pipe(jscs())
+        .pipe(jscs.reporter())
+        .pipe(gulp.dest(paths.scripts));
 });
 
 
-
-gulp.task('build-custom', ['custom-images', 'custom-styles' , 'custom-templates' , 'lint' , 'custom-js']);
-
-// /***************************************************************************************************************************************************************/
+gulp.task('lint', ['lint-code']);
 
 
-// track all todo in files 
-gulp.task('todo', function () {
-    gulp.src(paths.scripts)
-        .pipe(todo())
-        .pipe(todo.reporter('json', { fileName: 'todo.json' }))
-        .pipe(gulp.dest('./'));
+gulp.task('custom-js', function () {
+
+    return gulp.src(paths.scripts)
+        .pipe(concat('app.min.js'))
+        .pipe(minifyJs({
+            outSourceMap: true
+        }))
+        .pipe(gulp.dest(dest.scripts))
+        .pipe(notify("JS Files are Moved"));
+
 });
 
-
-gulp.task('quality', ['lint','todo']);
-
-
-
+gulp.task('build-custom', ['custom-images', 'custom-styles', 'custom-templates', 'lint', 'custom-js']);
 
 
 // /**********************************************************************************************************************************************************/
 
 
-gulp.task('watch', function() {
+gulp.task('watch', function () {
     gulp.watch([paths.images], ['custom-images']);
     gulp.watch([paths.styles], ['custom-styles']);
     gulp.watch([paths.scripts], ['custom-js']);
@@ -153,18 +167,27 @@ gulp.task('watch', function() {
     gulp.watch([paths.main], ['usemin']);
 });
 
+
+
 // browser sync yask
-gulp.task('browser-sync', function() {
+gulp.task('browser-sync', function () {
     browserSync.init({
         server: {
             baseDir: "./public"
         }
     });
-    
+
+    // browserSync.init({
+    //     proxy: '127.0.0.1:8000',
+    //     port: 8000,
+    //     open: true,
+    //     notify: false
+    // });
+
     //watchFunction();
     gulp.watch(['public/**/*.*']).on('change', browserSync.reload);
-    
+
 });
 
 gulp.task('build', ['build-vendors', 'build-custom']);
-gulp.task('default', ['build', 'browser-sync', 'watch']);
+gulp.task('default', ['build', 'watch', 'browser-sync']);
